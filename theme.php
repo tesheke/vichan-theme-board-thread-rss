@@ -187,7 +187,11 @@ if (!class_exists('BoardThreadRSS')) {
 
         function get_base_url($config) {
             if ($this->settings['base_url'] == '-1') {
-                return $config['base_url'];
+                if (array_key_exists('base_url', $config)) {
+                    return $config['base_url'];
+                };
+                return (empty($_SERVER['HTTPS']) ? 'http://' : 'https://')
+                    . $_SERVER['HTTP_HOST'];
             };
             return $this->settings['base_url'];
         }

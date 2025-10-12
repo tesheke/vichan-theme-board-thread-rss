@@ -78,7 +78,7 @@ $theme['config'][] = Array(
     'type' => 'text',
     'default' => '-1',
     'title' => 'Base URL',
-    'comment' => '(use $config[\'base_url\'] if -1 . eg. "https://test.com")'
+    'comment' => '(if -1, use $config[\'base_url\'] or $_SERVER[*] . eg. "https://test.com")'
 );
 
 // Unique function name for building everything
