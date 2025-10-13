@@ -27,24 +27,24 @@
 <rss xmlns:dc="http://purl.org/dc/elements/1.1/"
      version="2.0">
   <channel>
-    <title>{{ op.subject }} - {{ op.board_title }}</title>
+    <title>{{ op.subject|e }} - {{ op.board_title|e }}</title>
     <description>
       <![CDATA[{{ op.snippet }}]]>
     </description>
-    <generator>Tinyboard {{ config.version }}, {{ theme_name }}</generator>
+    <generator>Tinyboard {{ config.version }}, {{ theme_name|e }}</generator>
     <link>{{ op.link }}</link>
     <lastBuildDate>{{ now_rfc822 }}</lastBuildDate>
     {% for file in op.files %}
     <image>
       <url>{{ file.computed_thumb_link }}</url>
       <link>{{ file.file_link }}</link>
-      <title>{{ file.name }}</title>
+      <title>{{ file.name|e }}</title>
     </image>
     {% endfor %}
 
     {% for post in post_list %}
     <item>
-      <title>{{ post.subject }} - {{ post.board_title }}</title>
+      <title>{{ post.subject|e }} - {{ post.board_title|e }}</title>
       <description>
 	<![CDATA[{{ post.snippet }}]]>
       </description>
@@ -55,7 +55,7 @@
       <image>
 	<url>{{ file.computed_thumb_link }}</url>
 	<link>{{ file.file_link }}</link>
-	<title>{{ file.name }}</title>
+	<title>{{ file.name|e }}</title>
       </image>
       {% endfor %}
     </item>
