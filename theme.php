@@ -36,10 +36,26 @@ if (!class_exists('BoardThreadRSS')) {
 			};
 		}
 
+        public function build_all() {
+			global $config;
+
+            foreach (listBoards() as $board) {
+				$b_uri = $board['uri'];
+                if (!$this->is_target_board($b_uri)) {
+                    continue;
+                };
+                $this->build_board_rss($config, $board);
+                foreach ($this->list_threads($b_uri) as $thread_id) {
+                    $this->build_thread_rss($config, $board, $thread_id);
+                };
+            };
+        }
+
         public static function event_handler($thread_id) {
             global $board, $config;
 			try {
                 $b = new self(self::$settings_static);
+                $b->build_board_rss($config, $board);
                 $b->build_thread_rss($config, $board, $thread_id);
 			}
 			catch (Exception $e) {
@@ -65,20 +81,6 @@ if (!class_exists('BoardThreadRSS')) {
                 return false;
             };
             return true;
-        }
-
-        public function build_all() {
-			global $config;
-
-            foreach (listBoards() as $board) {
-				$b_uri = $board['uri'];
-                if (!$this->is_target_board($b_uri)) {
-                    continue;
-                };
-                foreach ($this->list_threads($b_uri) as $thread_id) {
-                    $this->build_thread_rss($config, $board, $thread_id);
-                };
-            };
         }
 
 		static public function get_theme_path($config, $settings) {
@@ -125,6 +127,42 @@ if (!class_exists('BoardThreadRSS')) {
             return preg_replace('#/+#','/',join('/', $paths));
         }
 
+        public function build_board_rss($config, $board) {
+            // $board['uri']: 'b', 'jp', 'pol', etc...
+            $query = 'SELECT * FROM ``posts_%s``'
+                .' ORDER BY id DESC LIMIT :limit';
+            $query = sprintf($query, $board['uri']);
+            $query = prepare($query) or error(db_error());
+            $query->bindValue(':limit', $this->settings['posts_limit'], PDO::PARAM_INT);
+            $query->execute();
+
+            $post_list = [];
+            while ($post = $query->fetch(PDO::FETCH_ASSOC)) {
+                $this->preprocess_post($post, $board, $config);
+                $post_list[] = $post;
+            };
+            $board = $this->preprocess_board($board, $config);
+
+            $datetime_now = new DateTime('@'.time());
+            $template_path = self::join_path(
+                self::get_theme_path($config, $this->settings),
+                $this->settings['board_rss_template']
+            );
+            $output = Element($template_path, Array(
+				'settings' => $this->settings,
+				'config' => $config,
+                'board' => $board,
+				'post_list' => $post_list,
+                'theme_name' => 'BoardThreadRSS',
+                'now_rfc822' => $datetime_now->format(DateTime::RFC822)
+			));
+
+            $rss_path = self::join_path(
+                $board['uri'],
+                $this->settings['board_rss_filename']
+            );
+            file_write($rss_path, $output);
+        }
 
         public function build_thread_rss($config, $board, $thread_id) {
             // $board['uri']: 'b', 'jp', 'pol', etc...
@@ -161,6 +199,7 @@ if (!class_exists('BoardThreadRSS')) {
                 $post_list[] = $post;
             };
             $this->preprocess_post($original_post, $board, $config);
+            $board = $this->preprocess_board($board, $config);
 
             $datetime_now = new DateTime('@'.time());
             $template_path = self::join_path(
@@ -263,6 +302,15 @@ if (!class_exists('BoardThreadRSS')) {
                 $file->computed_name = mb_substr(
                     $file->filename, 0, $config['max_filename_display'], 'UTF-8');
             };
+        }
+
+        function preprocess_board($board, $config) {
+            // $board is duplicated variable of array type.
+            $base_url = $this->get_base_url($config);
+            $board['link'] =
+                self::join_path($base_url, $config['root'], $board['uri']);
+            return $board;
+            
         }
     };
 

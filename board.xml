@@ -10,38 +10,30 @@
    | - board.uri e.g. 'b'
    | - board.title
    | - board.link : full url of the board
-   - op : original post
-   | - op.subject
-   | - op.body : comment
-   | - op.snippet : shortened body
-   | - op.board_title
-   | - op.time_rfc822
-   | - op.files
-   | | - op.files[N].computed_name
-   | | - op.files[N].link : full url of the post
-   | | - op.files[N].computed_thumb
-   | | - op.files[N].computed_thumb_link : full url of the thumbnail
    - post_list : replies to op
-   | - post_list[N] : the same attributes as `op` are available.
+   | - post_list[N]
+   | - post_list[N].subject
+   | - post_list[N].body : comment
+   | - post_list[N].snippet : shortened body
+   | - post_list[N].board_title
+   | - post_list[N].time_rfc822
+   | - post_list[N].files
+   | | - .files[N].computed_name
+   | | - .files[N].link : full url of the post
+   | | - .files[N].computed_thumb
+   | | - .files[N].computed_thumb_link : full url of the thumbnail
  #}
 <?xml version="1.0" encoding="utf-8"?>
 <rss xmlns:dc="http://purl.org/dc/elements/1.1/"
      version="2.0">
   <channel>
-    <title>{{ op.subject|e }} - {{ op.board_title|e }}</title>
+    <title>{{ board.uri|e }} - {{ board.title|e }}</title>
     <description>
-      <![CDATA[{{ op.snippet }}]]>
+      <![CDATA[{{ board.subtitle }}]]>
     </description>
     <generator>Tinyboard {{ config.version }}, {{ theme_name|e }}</generator>
-    <link>{{ op.link }}</link>
+    <link>{{ board.link }}</link>
     <lastBuildDate>{{ now_rfc822 }}</lastBuildDate>
-    {% for file in op.files %}
-    <image>
-      <url>{{ file.computed_thumb_link }}</url>
-      <link>{{ file.file_link }}</link>
-      <title>{{ file.computed_name|e }}</title>
-    </image>
-    {% endfor %}
 
     {% for post in post_list %}
     <item>

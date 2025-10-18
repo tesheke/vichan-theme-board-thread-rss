@@ -5,7 +5,7 @@ $theme = Array();
 $theme['name'] = 'board thread RSS(dir:' . basename(dirname(__FILE__)) . ')';
 // Description (you can use Tinyboard markup here)
 $theme['description'] = 'RSS for each board and each thread.';
-$theme['version'] = 'v0.5';
+$theme['version'] = 'v0.9';
 
 // Theme configuration	
 $theme['config'] = Array();
@@ -53,7 +53,7 @@ $theme['config'][] = Array(
     'name' => 'thread_rss_suffix',
     'type' => 'text',
     'default' => '_rss20.xml',
-    'title' => 'feed file suffix',
+    'title' => 'thread feed file suffix',
     'comment' => '(e.g. https://example.net/sub/vichan/b/res/{thread_id}{suffix} )'
 );
 
@@ -62,6 +62,22 @@ $theme['config'][] = Array(
   'type' => 'text',
   'default' => 'thread.xml',
   'title' => 'thread rss template',
+  'comment' => '(input. relative path from this theme directory.)'
+);
+
+$theme['config'][] = Array(
+    'name' => 'board_rss_filename',
+    'type' => 'text',
+    'default' => 'recent_rss20.xml',
+    'title' => 'board feed filename',
+    'comment' => '(e.g. https://example.net/sub/vichan/b/recent_rss20.xml )'
+);
+
+$theme['config'][] = Array(
+  'name' => 'board_rss_template',
+  'type' => 'text',
+  'default' => 'board.xml',
+  'title' => 'board rss template',
   'comment' => '(input. relative path from this theme directory.)'
 );
 
