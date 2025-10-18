@@ -16,7 +16,7 @@
    | - op.board_title
    | - op.time_rfc822
    | - op.files
-   | | - op.files[N].name
+   | | - op.files[N].computed_name
    | | - op.files[N].link : full url of the post
    | | - op.files[N].computed_thumb
    | | - op.files[N].computed_thumb_link : full url of the thumbnail
@@ -38,7 +38,7 @@
     <image>
       <url>{{ file.computed_thumb_link }}</url>
       <link>{{ file.file_link }}</link>
-      <title>{{ file.name|e }}</title>
+      <title>{{ file.computed_name|e }}</title>
     </image>
     {% endfor %}
 
@@ -55,7 +55,7 @@
       <image>
 	<url>{{ file.computed_thumb_link }}</url>
 	<link>{{ file.file_link }}</link>
-	<title>{{ file.name|e }}</title>
+	<title>{{ file.computed_name|e }}</title>
       </image>
       {% endfor %}
     </item>

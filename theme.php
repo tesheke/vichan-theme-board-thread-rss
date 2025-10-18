@@ -254,6 +254,15 @@ if (!class_exists('BoardThreadRSS')) {
                 $file->computed_thumb_link =
                     self::join_path($prefix, $file->computed_thumb);
             };
+            // - prepare 'computed_name'
+            foreach ($post['files'] as $file) {
+                if (!$config['show_filename']) {
+                    $file->computed_name = '';
+                    continue;
+                };
+                $file->computed_name = mb_substr(
+                    $file->filename, 0, $config['max_filename_display'], 'UTF-8');
+            };
         }
     };
 
