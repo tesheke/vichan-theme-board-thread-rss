@@ -117,14 +117,38 @@ if (!class_exists('BoardThreadRSS')) {
             });
         }
 
+		// echo join_path('xx://', 'yy', 'zz')    .PHP_EOL; => "xx://yy/zz"
+		// echo join_path('xx://', '/yy', 'zz')   .PHP_EOL; => "xx://yy/zz"
+		// echo join_path('xx://', 'yy/', 'zz')   .PHP_EOL; => "xx://yy/zz"
+		// echo join_path('xx://', '/yy/', '/zz') .PHP_EOL; => "xx://yy/zz"
+		// echo join_path('xx://', 'yy', '//zz')  .PHP_EOL; => "xx://yy//zz"
         static function join_path() {
-            $paths = array();
+            $path_list = array();
 
             foreach (func_get_args() as $arg) {
-                if ($arg !== '') { $paths[] = $arg; }
+                if ($arg !== '') { $path_list[] = $arg; }
             };
 
-            return preg_replace('#/+#','/',join('/', $paths));
+			$result = null;
+			foreach ($path_list as $path) {
+				if ($result === null) {
+					$result = $path;
+					continue;
+				} else {
+					// 開始 "/" は最大1文字だけ削る。それ以上は削らない。
+					if (str_starts_with($path, '/')) {
+						$path = substr($path, 1);
+					};
+
+					if (!str_ends_with($result, '/')) {
+						$result .= '/';
+					};
+
+					$result .= $path;
+				};
+			};
+
+			return $result;
         }
 
         public function build_board_rss($config, $board) {
